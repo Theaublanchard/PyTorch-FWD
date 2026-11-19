@@ -35,7 +35,7 @@ def get_packet_shape(
     """
     device = th.device("cuda:0") if th.cuda.is_available() else th.device("cpu")
     img_batch = next(iter(dataloader))
-    if isinstance(img_batch, list):
+    if isinstance(img_batch, list) or isinstance(img_batch, tuple):
         img_batch = img_batch[0]
     img_batch = img_batch.to(device)
     packet_ = forward_wavelet_packet_transform(img_batch, wavelet, max_level, log_scale)
@@ -63,8 +63,8 @@ def compute_packet_statistics(
         dataloader, wavelet, max_level, log_scale
     )
     packet_tensor = th.zeros(n, num_packets, c, d0, d1)
-    for k, img_batch in enumerate(tqdm(dataloader)):
-        if isinstance(img_batch, list):
+    for k, img_batch in enumerate(tqdm(dataloader, desc="Computing wavelet packet transform for batches")):
+        if isinstance(img_batch, list) or isinstance(img_batch, tuple):
             img_batch = img_batch[0]
         img_batch = img_batch.to(device)
         packet_ = forward_wavelet_packet_transform(img_batch, wavelet, max_level, log_scale)
@@ -74,14 +74,13 @@ def compute_packet_statistics(
     packet_tensor = th.permute(packet_tensor, (1, 0, 2, 3, 4))
     P, BS, C, H, W = packet_tensor.shape
     packet_tensor = th.reshape(packet_tensor, (P, BS, C * H * W))
-    print("Computing mean and std for each packet.")
     mu = th.mean(packet_tensor, dim=1).numpy()
 
     def gpu_cov(tensor_):
         return th.cov(tensor_.T).cpu()
 
     sigma = np.zeros((P, C * H * W, C * H * W))
-    for p in range(P):
+    for p in tqdm(range(P), desc="Computing covariance for each packet",leave=False):
         sigma[p, :, :] = gpu_cov(packet_tensor[p, :, :].to(device)).numpy()
     return mu, sigma
 
@@ -147,7 +146,7 @@ def calculate_path_statistics(
 def _compute_avg_frechet_distance(mu1, mu2, sigma1, sigma2):
     """Compute avg frechet distance over packets."""
     frechet_distances = []
-    for packet_no in tqdm(range(len(mu1))):
+    for packet_no in tqdm(range(len(mu1)), desc="Computing Frechet distance for each packet"):
         fd = calculate_frechet_distance(
             mu1=mu1[packet_no, :],
             mu2=mu2[packet_no, :],
