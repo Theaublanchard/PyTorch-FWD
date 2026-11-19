@@ -42,11 +42,18 @@ shifts and various corruptions compared to other metrics.
 Installation
 ============
 
-Install via pip 
+Install with uv
 
 .. code:: bash
 
-   pip install pytorchfwd
+   uv add pytorchfwd
+
+For local development, create the environment and install all locked
+dependencies with:
+
+.. code:: bash
+
+   uv sync --dev
 
 
 Usage
@@ -109,11 +116,17 @@ these repositories.
 Testing
 =======
 The `tests` folder contains tests to conduct independent verification of FWD. Github workflow executes all these tests.
-To run tests on your local system install `nox`, as well as this package via `pip install .`, and run
+To run tests locally, sync the development dependencies and run pytest with uv:
 
 .. code-block:: sh
 
-   nox -s test
+   uv run pytest
+
+Build distributions with:
+
+.. code-block:: sh
+
+   uv build
 
 
 .. |Workflow| image:: https://github.com/BonnBytes/PyTorch-FWD/actions/workflows/tests.yml/badge.svg

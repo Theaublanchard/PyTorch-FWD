@@ -71,9 +71,8 @@ def run_test_fast(session):
 
 @nox.session(name="build")
 def build(session):
-    """Build a pip package."""
-    session.install("build")
-    session.run("python", "-m", "build")
+    """Build a package with uv."""
+    session.run("uv", "build")
 
 
 @nox.session(name="finish")

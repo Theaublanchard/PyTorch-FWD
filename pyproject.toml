@@ -1,0 +1,83 @@
+[project]
+name = "pytorchfwd"
+version = "1.0.1"
+description = "Compute Fréchet Wavelet Distance for image generation."
+readme = "README.rst"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Theau Blanchard", email = "theau.blanchard@inria.fr" }
+]
+keywords = [
+    "wavelets",
+    "wavelet transform",
+    "PyTorch",
+    "generative learning",
+    "Fréchet distance",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "pillow",
+    "ptwt==0.1.8",
+    "pywavelets",
+    "scikit-learn",
+    "scipy",
+    "torch",
+    "torchvision",
+    "tqdm",
+]
+
+[project.scripts]
+pytorch-fwd = "pytorchfwd.fwd:main"
+
+[project.urls]
+Homepage = "https://github.com/BonnBytes/PyTorch-FWD"
+Repository = "https://github.com/BonnBytes/PyTorch-FWD"
+Issues = "https://github.com/BonnBytes/PyTorch-FWD/issues"
+
+[dependency-groups]
+dev = [
+    "black",
+    "bump2version",
+    "darglint",
+    "flake8",
+    "flake8-black",
+    "flake8-broken-line",
+    "flake8-bugbear",
+    "flake8-docstrings",
+    "mypy",
+    "nox",
+    "pep8-naming",
+    "pydocstyle",
+    "pyroma",
+    "pytest",
+    "isort",
+    "build",
+    "twine",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "pytorchfwd"
+
+[tool.darglint]
+docstring_style = "google"
+strictness = "short"

@@ -9,63 +9,59 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [3.11]
+        python-version: ["3.9", "3.11"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: pip install nox
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: Sync dependencies
+        run: uv sync --locked --dev
       - name: Test with pytest
-        run:
-          nox -s fast-test
+        run: uv run pytest -m "not slow"
   lint:
     name: lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: pip install nox
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v6
+      - name: Sync dependencies
+        run: uv sync --locked --dev
       - name: Run flake8
-        run: nox -s lint
+        run: uv run flake8 src tests noxfile.py
   typing:
     name: typing
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: pip install nox
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v6
+      - name: Sync dependencies
+        run: uv sync --locked --dev
       - name: Run mypy
-        run: nox -s typing
+        run: >-
+          uv run mypy --install-types --non-interactive
+          --ignore-missing-imports --no-strict-optional
+          --no-warn-return-any --implicit-reexport
+          --allow-untyped-calls --explicit-package-bases src
   package-check:
     name: pyroma
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: pip install nox
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v6
+      - name: Sync dependencies
+        run: uv sync --locked --dev
       - name: Run pyroma
-        run: nox -s check-package
+        run: uv run pyroma .
